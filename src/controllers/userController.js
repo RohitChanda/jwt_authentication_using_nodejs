@@ -1,6 +1,9 @@
 const User = require("../models/user");
 const client = require("../redis/redis");
-const {generateUserToken, verifyRefreshToken} = require("../helper/jwt_helper");
+const {
+  generateUserToken,
+  verifyRefreshToken,
+} = require("../helper/jwt_helper");
 
 const createUser = async (req, res) => {
   try {
@@ -8,19 +11,18 @@ const createUser = async (req, res) => {
       email: req.body.email,
       password: req.body.password,
     };
-    const user = new User(payload); 
+    const user = new User(payload);
+
     // Password will hash in pre save method
-    
+
     await user.save();
 
     res.status(200).json({ user: payload, msg: "user created succesfully!!" });
   } catch (error) {
     console.log(error);
-    res.status(500).json([
-      {
-        res: error,
-      },
-    ]);
+    res.status(500).json({
+      res: error,
+    });
   }
 };
 
@@ -46,11 +48,9 @@ const handleUserlogin = async (req, res) => {
       .json({ accessToken, refreshToken, msg: "user loggedin successfully" });
   } catch (error) {
     console.log(error);
-    res.status(500).json([
-      {
-        res: error,
-      },
-    ]);
+    res.status(500).json({
+      res: error,
+    });
   }
 };
 
@@ -75,14 +75,18 @@ const handleRegenerateToken = async (req, res) => {
         .json({ msg: "Access Denied. No refresh token provided." });
     }
     const decode = await verifyRefreshToken(refreshtoken);
- 
+
     const user = {
       id: decode._id,
       email: decode.email,
     };
 
     const { accessToken, refreshToken } = await generateUserToken(user);
-    return res.status(200).json({ accessToken, refreshToken, msg: "token generate successfully!!!" });
+    return res.status(200).json({
+      accessToken,
+      refreshToken,
+      msg: "token generate successfully!!!",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -91,7 +95,7 @@ const handleRegenerateToken = async (req, res) => {
   }
 };
 
-const handleLogout = async(req, res) => {
+const handleLogout = async (req, res) => {
   try {
     const refreshtoken = req.headers["refreshtoken"];
     if (!refreshtoken) {
@@ -103,19 +107,19 @@ const handleLogout = async(req, res) => {
     const user = await verifyRefreshToken(refreshtoken);
     await client.DEL(user._id);
 
-    return res.status(200).json({  msg: "Logout Successfully!!!" });
+    return res.status(200).json({ msg: "Logout Successfully!!!" });
   } catch (error) {
     console.log(error);
     res.status(500).json({
       res: error.message,
     });
   }
-}
+};
 
 module.exports = {
   createUser,
   handleUserlogin,
   handleFetchuserList,
   handleRegenerateToken,
-  handleLogout
+  handleLogout,
 };
