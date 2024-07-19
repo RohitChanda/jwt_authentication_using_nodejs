@@ -22,7 +22,4 @@ process.on("SIGINT", () => {
     client.quit();
 });
 
-//-------- || Start the Redis Connection || -------------------- //
-client.connect();
-
 module.exports = client;

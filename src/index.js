@@ -9,6 +9,9 @@ const port = 8000;
 // ---- || Start Database connection || -------- //
 dbConnect();
 
+//-------- || Start the Redis Connection || -------------------- //
+client.connect();
+
 // ------ || Adding JSON middleware and Routes Middleware || ---------------------- //
 app.use(express.json());
 app.use(routers);
