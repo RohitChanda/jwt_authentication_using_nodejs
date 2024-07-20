@@ -131,6 +131,25 @@ module.exports = User;
 if (this.isNew) { }
 ```
 
+### Schema Methods: 
+- Each Schema can define instance and static methods for its model.
+- Methods are instance level functions, and can be used only on an object/instance of schema, and not on the Schema directly. They work as an extension function to the instance, providing additional functionality.
+```js
+UserSchema.methods.isValidPassword = async function (password) {
+  try {
+    return await bcrypt.compare(password, this.password);
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+```
+- Here, we created a method for our instance by the name, “isValidPassword”.
+```js
+const user = await User.findOne({ email: body.email });
+const verifypassword = await user.isValidPassword(body.password);
+
+```
+
 
 
 ## 🚀 Generate secret_key 
