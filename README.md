@@ -150,7 +150,14 @@ const verifypassword = await user.isValidPassword(body.password);
 
 ```
 
+## 🚀 What is Bcrypt. How to use it to hash passwords? 
+- The bcrypt npm package is a JavaScript implementation of the bcrypt password hashing function that allows you to easily create a hash out of a password string. Unlike encryption which you can decode to get back the original password, **hashing is a one-way function that can’t be reversed once done**.
+- learn [more](https://dev.to/documatic/what-is-bcrypt-how-to-use-it-to-hash-passwords-5c0g#:~:text=The%20bcrypt%20npm%20package%20is,t%20be%20reversed%20once%20done.)
 
+## Creating a password hash with bcrypt 
+To generate a password using the bycrypt module, you need to call the hash() method which accepts the following parameters:
+  - The password string that you wish to hash
+  - The number of rounds to secure the hash. The number commonly ranges from 5 to 15
 
 ## 🚀 Generate secret_key 
 ```js
