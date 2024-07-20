@@ -94,7 +94,7 @@ const UserSchema = new Schema({
 UserSchema.pre("save", async function (next) {
   try {
     /* 
-      Here first checking if the document is new by using a helper of mongoose .isNew, therefore, this.isNew is true if document is new else false, and we only want to hash the password if its a new document, else  it will again hash the password if you save the document again by making some changes in other fields incase your document contains other fields.
+      Here first checking if the document is new by using a helper of mongoose .isNew, therefore, this.isNew is true if the document is new else false, and we only want to hash the password if its a new document, else  it will again hash the password if you save the document again by making some changes in other fields incase your document contains other fields.
       */
     if (this.isNew) {
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
@@ -187,6 +187,71 @@ const createUser = async (req, res) => {
   }
 };
 ```
+
+## user login route
+```js
+const handleUserlogin = async (req, res) => {
+  try {
+    const body = req.body;
+    // console.log(body);
+    const user = await User.findOne({ email: body.email });
+    if (!user) {
+      return res.status(400).json({ msg: "Invalid email or password" });
+    }
+
+    const verifypassword = await user.isValidPassword(body.password);
+
+    if (!verifypassword) {
+      return res.status(400).json({ msg: "Invalid email or password" });
+    }
+
+    const { accessToken, refreshToken } = await generateUserToken(user);
+
+    res
+      .status(200)
+      .json({ accessToken, refreshToken, msg: "user loggedin successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      res: error,
+    });
+  }
+};
+```
+- if the password is valid then we  generate the access token and the refresh token
+  ```js
+  const generateUserToken = async (user) => {
+    try {
+      const payload = {
+        _id: user.id,
+        email: user.email,
+      };
+      const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "1m",
+      });
+
+      const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: "1d",
+      });
+
+      await client.SET(user.id, refreshToken, {
+        EX: 1 * 24 * 60 * 60, // in second
+      });
+
+      return { accessToken, refreshToken };
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+  ```
+#### jwt.sign(payload, secretOrPrivateKey, [options, callback])
+- payload could be an object literal, buffer or string representing valid JSON.
+- secretOrPrivateKey is a string (utf-8 encoded), buffer, object, or KeyObject containing either the secret for HMAC algorithms or the PEM encoded private key for RSA and ECDSA.
+- options:
+  - algorithm (default: HS256)
+  - expiresIn: expressed in seconds or a string describing a time span vercel/ms.
+  - audience : In the JSON Web Token (JWT) standard, the "aud" (audience) claim is a string or array of strings that identifies the **recipients** that the JWT is intended for
+  - ... etc
 
 
 ## 🚀 Generate secret_key 
