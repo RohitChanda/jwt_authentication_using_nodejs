@@ -150,6 +150,50 @@ const verifypassword = await user.isValidPassword(body.password);
 
 ```
 
+## 🚀 Setup redis
+Redis (Remote Dictionary Server) is an open-source, in-memory, NoSQL key/value store that can be used as a database, cache, or message broke
+### Install Redis on Windows
+- to install Redis download the msi file from [https://github.com/microsoftarchive/redis/releases](https://github.com/microsoftarchive/redis/releases)
+- run the setup file
+### Install Redis commander 
+- It gives us Redis' GUI experience.
+- Install and run
+```
+npm install -g redis-commander
+redis-commander
+```
+
+### Configure redis into your project
+- Install Redis with npm : ```npm i redis```
+- Inside your project
+  ```js
+  const redis = require("redis");
+  const client = redis.createClient({
+      // url
+      port: 6379,
+      host: '127.0.0.1'
+  });
+
+  // -------- || Listening on Redis Events || --------- //
+  client.on('connect', () => console.log('Connected to redis server....'))
+  client.on('ready', () => console.log('Connected to redis server and Ready to use....'))
+  client.on('error', (err) => console.log('Redis Client Error', err))
+  client.on('end', (err) => console.log('Redis Client Disconnected...'))
+
+  // --------- || Quit the Redis Connection || ---------------- //
+  /**
+   * When we ctrl+c to stop our application then we need to stop our redis
+   * that time SIGINT event fire
+   */
+  process.on("SIGINT", () => {
+      client.quit();
+  });
+  
+  module.exports = client;
+  ```
+
+
+
 ## 🚀 What is Bcrypt. How to use it to hash passwords? 
 - The bcrypt npm package is a JavaScript implementation of the bcrypt password hashing function that allows you to easily create a hash out of a password string. Unlike encryption which you can decode to get back the original password, **hashing is a one-way function that can’t be reversed once done**.
 - learn [more](https://dev.to/documatic/what-is-bcrypt-how-to-use-it-to-hash-passwords-5c0g#:~:text=The%20bcrypt%20npm%20package%20is,t%20be%20reversed%20once%20done.)
