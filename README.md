@@ -158,6 +158,11 @@ const verifypassword = await user.isValidPassword(body.password);
 To generate a password using the bycrypt module, you need to call the hash() method which accepts the following parameters:
   - The password string that you wish to hash
   - The number of rounds to secure the hash. The number commonly ranges from 5 to 15
+  - **Generating salt for the hash:** A hashing function requires you to add salt into the process. A salt is simply a random data that’s used as an additional input to the hashing function to safeguard your password.The random string from the salt makes the hash unpredictable.
+  ```js
+  const salt = await bcrypt.genSalt(Number(process.env.SALT));
+  const hashedPassword = await bcrypt.hash(this.password, salt);
+  ```
 
 ## 🚀 Generate secret_key 
 ```js
