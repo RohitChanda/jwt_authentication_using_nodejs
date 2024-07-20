@@ -120,6 +120,12 @@ const User = new mongoose.model("user", UserSchema);
 module.exports = User;
 
 ```
+- Mongoose is a powerful MongoDB object modeling tool for Node.js that provides a straightforward way to interact with MongoDB databases. One of the key features of Mongoose is its support for pre and post hooks, allowing you to execute code before or after specific database operations.
+  
+### Pre Save Hooks: 
+- The pre-save hook is executed just before a document is saved to the database. It’s commonly used for tasks such as data validation, generating timestamps, or modifying the document before saving
+- One thing to keep in mind here is that ```this``` inside of a pre-save hook is the document that is about to be saved.
+- if we want to execute the middleware ONLY when this document is new, we can check the ```isNew``` property of the document that’s about to be saved.
 
 
 ## 🚀 Generate secret_key 
