@@ -234,6 +234,7 @@ const handleUserlogin = async (req, res) => {
         expiresIn: "1d",
       });
 
+      //set value in redis
       await client.SET(user.id, refreshToken, {
         EX: 1 * 24 * 60 * 60, // in second
       });
