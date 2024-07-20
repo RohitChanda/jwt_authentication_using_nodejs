@@ -191,6 +191,9 @@ redis-commander
   
   module.exports = client;
   ```
+  #### SIGINT event
+  - it's a Node.js Process Signal Events.
+  - It is supported on all platforms via terminal, It is usually be generated with Ctrl+C (You can change this as well). It is not generated when the terminal raw mode is enabled and Ctrl+C is used. 
 
 
 
@@ -297,7 +300,6 @@ const handleUserlogin = async (req, res) => {
   - expiresIn: expressed in seconds or a string describing a time span vercel/ms.
   - audience : In the JSON Web Token (JWT) standard, the "aud" (audience) claim is a string or array of strings that identifies the **recipients** that the JWT is intended for
   - ... etc
-
 
 ## 🚀 Generate secret_key 
 ```js
