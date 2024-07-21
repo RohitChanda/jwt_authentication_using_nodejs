@@ -211,7 +211,7 @@ To generate a password using the bycrypt module, you need to call the hash() met
   const hashedPassword = await bcrypt.hash(this.password, salt);
   ```
 
-## create user route 
+## 🚀 create user route 
 ```js
 const createUser = async (req, res) => {
   try {
@@ -235,7 +235,7 @@ const createUser = async (req, res) => {
 };
 ```
 
-## user login route
+## 🚀 user login route
 ```js
 const handleUserlogin = async (req, res) => {
   try {
@@ -265,7 +265,8 @@ const handleUserlogin = async (req, res) => {
   }
 };
 ```
-- if the password is valid then we  generate the access token and the refresh token
+- if the password is valid then we will generate the access token and the refresh token.
+- Take a look inside jwt_helper file.
   ```js
   const generateUserToken = async (user) => {
     try {
@@ -300,6 +301,77 @@ const handleUserlogin = async (req, res) => {
   - expiresIn: expressed in seconds or a string describing a time span vercel/ms.
   - audience : In the JSON Web Token (JWT) standard, the "aud" (audience) claim is a string or array of strings that identifies the **recipients** that the JWT is intended for
   - ... etc
+#### Set Value in redis
+```js
+await client.set('key', 'value', {
+  EX: 1 * 24 * 60 * 60, // in second
+  NX: true
+});
+```
+
+## 🚀 Re Generate tokens after the access token will expire
+```js
+const handleRegenerateToken = async (req, res) => {
+  try {
+    const refreshtoken = req.headers["refreshtoken"];
+    if (!refreshtoken) {
+      return res
+        .status(401)
+        .json({ msg: "Access Denied. No refresh token provided." });
+    }
+    const decode = await verifyRefreshToken(refreshtoken);
+
+    const user = {
+      id: decode._id,
+      email: decode.email,
+    };
+
+    const { accessToken, refreshToken } = await generateUserToken(user);
+    return res.status(200).json({
+      accessToken,
+      refreshToken,
+      msg: "token generate successfully!!!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      res: error.message,
+    });
+  }
+};
+```
+In side jwt_helper  file
+```js
+const verifyRefreshToken = async (refreshToken) => {
+    try {
+      const decode = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+      const cacheData = await client.GET(decode._id);
+      if (cacheData !== refreshToken) {
+        throw new Error("Invalid refresh token!!!");
+      }
+
+      return decode;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+```
+### jwt.verify(token, secretOrPublicKey, [options, callback])
+- token is the JsonWebToken string.
+- secretOrPublicKey is a string (utf-8 encoded), buffer, or KeyObject containing either the secret for HMAC algorithms, or the PEM encoded public key for RSA and ECDSA.
+- options
+  - algorithms: List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"].
+  - audience:
+### Get the value from Redis
+- If the refresh token is verified we try to get value from Redis using the user ID as a key.
+- Then we check if the value from Redis is the same as the refreshtoken which is passed as an argument in the verifyRefreshToken function.
+```js
+  const cacheData = await client.GET(decode._id);
+  if (cacheData !== refreshToken) {
+      throw new Error("Invalid refresh token!!!");
+  }
+```
+  
 
 ## 🚀 Generate secret_key 
 ```js
