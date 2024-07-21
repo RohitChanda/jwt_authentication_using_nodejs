@@ -371,7 +371,32 @@ const verifyRefreshToken = async (refreshToken) => {
       throw new Error("Invalid refresh token!!!");
   }
 ```
-  
+
+##  🚀 User logout route
+```js
+const handleLogout = async (req, res) => {
+  try {
+    const refreshtoken = req.headers["refreshtoken"];
+    if (!refreshtoken) {
+      return res
+        .status(401)
+        .json({ msg: "Access Denied. No refresh token provided." });
+    }
+
+    const user = await verifyRefreshToken(refreshtoken);
+    await client.DEL(user._id);
+
+    return res.status(200).json({ msg: "Logout Successfully!!!" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      res: error.message,
+    });
+  }
+};
+
+```
+- If the refresh token is valid then delete the refresh token from Redis server
 
 ## 🚀 Generate secret_key 
 ```js
