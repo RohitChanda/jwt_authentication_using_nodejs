@@ -396,14 +396,21 @@ const handleLogout = async (req, res) => {
 };
 
 ```
-- If the refresh token is valid then delete the refresh token from Redis server
+- If the refresh token is valid then delete the refresh token from the Redis server..
+
+## Summary
+- When the user **logs in**, create an access token with a short span of time and a refresh token with a long span of time.
+- Every time after generating a new refresh token, store it in the Redis server with the user ID as a key.
+- Using the access token user will access private data, APIs, etc.
+- When the access token expires, re-generate the access token using the refresh token.
+- When the user **logs out**, delete the refresh token based on the logged-in user ID from the Redis server.
 
 ## 🚀 Generate secret_key 
 ```js
 require("crypto").randomBytes(64).toString("hex")
 ```
 
-- if we don't provide expire time then the token will valid for lifetime
+- if we don't provide expire time then the token will valid for the lifetime
 
 ## Run the redis commander
 open the terminal and write
