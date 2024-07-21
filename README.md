@@ -47,7 +47,20 @@ This system allows for delegated or federated authentication, where a third-part
 ## Better user experience: 
 Users enjoy a smoother experience since they no longer need to log in every time they access an app or service. As long as their token is valid, they are granted access, simplifying the user experience.
 
-## Setup Express server
+## 🚀 Add env variables 
+```
+DBURL="mongodb+srv://rohit:mydb@cluster0.yeqxw.mongodb.net/node-auth"
+ACCESS_TOKEN_SECRET = 'Generate a Secret key from crypto module'
+REFRESH_TOKEN_SECRET= 'Generate a Secret key from crypto module'
+SALT = 10
+```
+## 🚀 Generate secret_key 
+```js
+require("crypto").randomBytes(64).toString("hex")
+```
+
+
+## 🚀Setup Express server
 ```js
 require("dotenv").config();
 const express = require('express');
@@ -72,7 +85,7 @@ app.listen(port, () => {
 })
 ```
 
-## Create User Model 
+## 🚀 Create User Model 
 ```js
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
@@ -298,7 +311,7 @@ const handleUserlogin = async (req, res) => {
 - secretOrPrivateKey is a string (utf-8 encoded), buffer, object, or KeyObject containing either the secret for HMAC algorithms or the PEM encoded private key for RSA and ECDSA.
 - options:
   - algorithm (default: HS256)
-  - expiresIn: expressed in seconds or a string describing a time span vercel/ms.
+  - expiresIn: expressed in seconds or a string describing a time span vercel/ms.If we don't provide expire time then the token will be valid for the lifetime.
   - audience : In the JSON Web Token (JWT) standard, the "aud" (audience) claim is a string or array of strings that identifies the **recipients** that the JWT is intended for
   - ... etc
 #### Set Value in redis
@@ -405,15 +418,4 @@ const handleLogout = async (req, res) => {
 - When the access token expires, re-generate the access token using the refresh token.
 - When the user **logs out**, delete the refresh token based on the logged-in user ID from the Redis server.
 
-## 🚀 Generate secret_key 
-```js
-require("crypto").randomBytes(64).toString("hex")
-```
 
-- if we don't provide expire time then the token will valid for the lifetime
-
-## Run the redis commander
-open the terminal and write
-```
-redis-commander
-```
